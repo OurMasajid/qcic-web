@@ -66,6 +66,26 @@
     timeEl.textContent = h12 + ":" + (m < 10 ? "0" + m : m) + " " + ampm;
   }
 
+  /* ---- Forms that hand off to the visitor's email client ---- */
+  document.querySelectorAll(".site-form[data-mailto]").forEach(function (form) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var to = form.getAttribute("data-mailto");
+      var prefix = form.getAttribute("data-subject-prefix") || "Website Message";
+      var name = form.querySelector('[name="name"]');
+      var email = form.querySelector('[name="email"]');
+      var subject = form.querySelector('[name="subject"]');
+      var message = form.querySelector('[name="message"]');
+      var subjectText = prefix + (subject && subject.value ? ": " + subject.value : "");
+      var bodyLines = [];
+      if (name) bodyLines.push("Name: " + name.value);
+      if (email) bodyLines.push("Email: " + email.value);
+      bodyLines.push("");
+      if (message) bodyLines.push(message.value);
+      window.location.href = "mailto:" + to + "?subject=" + encodeURIComponent(subjectText) + "&body=" + encodeURIComponent(bodyLines.join("\n"));
+    });
+  });
+
   /* ---- Footer year ---- */
   var yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
